@@ -1,0 +1,15 @@
+Unnamed: 0,Unnamed: 1,Unnamed: 2,Unnamed: 3,Quality,Unnamed: 5,Unnamed: 6,Unnamed: 7,Unnamed: 8,Unnamed: 9
+Machine code,Machine,Operations,Number of machines available,Average scrap (%),Average rework (%),Startup defects (%),"Surface (LxWxH mm3), without space for stock etc.",Purchase costs (€) (if new),Remarks
+SM,Sawing machine,Sawing,5,1.00747676874866,0.682933896523108,0.00591163918446869,1600x700x1700,4000,"Machines from different suppliers, data are averages"
+TM,NC turning lathe ,"Turning, drilling, reaming",4,3.17361063276128,1.35069535246938,0.324646650873003,5300 x 3400 x 2500 ,37000,"Machines from different suppliers, data are averages"
+MM,NC milling machine,Milling,5,3.85982909716243,1.83609278740734,0.17014413962512,1600 x 2300 x 2300,38000,"Machines from different suppliers, data are averages"
+MC,Machining center,"Turning, milling, drilling",5,4.52481399323609,2.07806735431302,0.721599550121972,1900 x 2100 x 2500,45000,"Machines from different suppliers, data are averages"
+DM,Drilling machine,"Drilling, reaming",2,2.27941134707572,3.2724550585586,0.511034201962443,600x1000x2200,5500,"Machines from different suppliers, data are averages"
+GM,Grinding machine,Grinding,4,1.38316226112588,1.0034254615223,0.016289545843008,2100×2400×2500,25000,"Machines from different suppliers, data are averages"
+CMM,Coordinate measuring machine,Measuring,4,0,1.38309699065722,0,1100x900x2300,31000,"Machines from different suppliers, data are averages"
+A,Assembly station,Assembly (manual),2,1.33732606014841,1.63553062598981,1.21277790117263,1000x700x800,2500,"Machines from different suppliers, data are averages"
+,,,,,,,,,
+W,,Warehouse/expedition,,,,,,,For every part; as raw material and as finished good
+P,Table(s) near assembly,Packaging,,,,,,,For every part
+ET,,External treatment,,,,,,,
+XX,Aisles,Transport,,,,,W: 1200-1500,,Depending on the type of transport

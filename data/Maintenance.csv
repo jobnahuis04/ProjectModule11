@@ -1,0 +1,15 @@
+Machine code,Machine,"Mean mPMTa,b (h)","Mean MPMTc,d (h)",Mean C&ITe per shift (h)
+SM,Sawing machine,1.5,4,0.15
+TM,NC turning lathe ,2,5,0.2
+MM,NC milling machine,2,5,0.2
+MC,Machining center,4,10,0.35
+DM,Drilling machine,2,5,0.2
+GM,Grinding machine,1.5,4,0.15
+CMM,Coordinate measuring machine,1.5,4,0.1
+,,,,
+,a mPMT = Minor Preventive Maintenance Time,,,
+,b Minor Preventive Maintenance after:,1300,Operating hours*,
+,c mPMT = Minor Preventive Maintenance Time,,,
+,d Major Preventive Maintenance after:,3900,Operating hours*,
+,e Cleaning and Inspection Time (C&IT):,every day at the beginning (inspection) and end (cleaning) of each shift,,
+,* machine operating hours = product process time,,,
