@@ -8,6 +8,7 @@ class OrderedPart:
         self.delivery_date = []
         self.quantity = []
         self.max_transport_batch = []
+        self.max_assembly_batch = []
         self.setup_time = []
         self.process_time = []
         self.stock = []
