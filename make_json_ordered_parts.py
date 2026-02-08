@@ -10,6 +10,7 @@ all_routes = df["Machine routing"].tolist()
 all_setup_time = df["Setup time (h)"].tolist()
 all_process_time = df["Process time (h)"].tolist()
 all_max_transport_batch = df["Max transport batch size (pieces) "].tolist()
+all_sub_part_id = df["Sub assy number"].tolist()
 
 part_id = df["Part number"]
 stock_size = df["Size (indicative)"]
@@ -29,15 +30,18 @@ index_end_part = [None]*len(ordered_part.part_id)
 
 for i in range(1,len(ordered_part.part_id)):
     index_start_part[i-1] = part_id[part_id == ordered_part.part_id[i-1]].index[0]
-    index_end_part[i-1] = part_id[part_id == ordered_part.part_id[i]].index[0]-1
+    index_end_part[i-1] = part_id[part_id == ordered_part.part_id[i]].index[0]
 index_start_part[-1] = part_id[part_id == ordered_part.part_id[-1]].index[0]
-index_end_part[-1] = len(part_id)-1
+index_end_part[-1] = len(part_id)
 
 # saving data in class
 def save_machining_info_to_class(all_data, class_variable):
     for i in range(len(ordered_part.part_id)):
         data = all_data[index_start_part[i]:index_end_part[i]]
         getattr(ordered_part, class_variable).append(data)
+        setattr(ordered_part, class_variable, [[x for x in inner if not pd.isna(x)] for inner in ordered_part.sub_part_id])  # here im removing the NaN, panda's worked nicely
+
+
 save_machining_info_to_class(all_routes, "route")
 save_machining_info_to_class(all_setup_time, "setup_time")
 save_machining_info_to_class(all_process_time, "process_time")
@@ -67,6 +71,12 @@ def write_order_to_class():
         ordered_part.orders.order_date.append([order_date[i] for i in indices_parts])
         ordered_part.orders.delivery_date.append([delivery_date[i] for i in indices_parts])
 write_order_to_class()
+
+def write_assembly_data_to_class():
+    ordered_part.is_main_assembly = [False]*len(ordered_part.part_id)
+    ordered_part.is_main_assembly = [p_id.endswith("01") for p_id in ordered_part.part_id]
+    save_machining_info_to_class(all_sub_part_id,"sub_part_id")
+write_assembly_data_to_class()
 
 # --------------------------------------------------------------------------------ChatGPT below
 # Recursive converter
