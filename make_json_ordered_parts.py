@@ -65,23 +65,23 @@ def write_assembly_data_to_class():
     ordered_part.is_main_assembly = [p_id.endswith("01") for p_id in ordered_part.part_id]
     save_machining_info_to_class(all_sub_part_id,"sub_part_id")
 write_assembly_data_to_class()
-print(all_sub_part_id)
+
 def write_order_to_class():
     for part_id in ordered_part.part_id:
         indices_parts = [i for i, x in enumerate(order_part_id) if x == part_id] # finding the indices in the order pattern
-        ordered_part.orders.number_of_orders.append(len(indices_parts))
+        n = len(indices_parts)
+        ordered_part.orders.number_of_orders.append(n)
 
         ordered_part.orders.order_number.append([order_number[i] for i in indices_parts])
         ordered_part.orders.quantity.append([quantity[i] for i in indices_parts])
 
         matching_quantities = [q for q, s in zip(all_quantity_of_sub_parts, all_sub_part_id) if s == part_id] # comparing the iterating id to the id's in the product portfolio
-        ordered_part.orders.quantity_in_assemblies.append(sum(matching_quantities))
-
-        ordered_part.orders.total_quantity.append(sum([quantity[i] for i in indices_parts])+int(sum(matching_quantities)))
+        ordered_part.sub_part_quantity.append(sum(matching_quantities))
+        ordered_part.total_sub_part_quantity.append(n*sum(matching_quantities)) #TODO fix this, now n = 0 for subparts
+        ordered_part.total_quantity.append(sum([quantity[i] for i in indices_parts]))#+int(sum(matching_quantities)))
         ordered_part.orders.order_date.append([order_date[i] for i in indices_parts])
         ordered_part.orders.delivery_date.append([delivery_date[i] for i in indices_parts])
 write_order_to_class()
-
 
 
 # --------------------------------------------------------------------------------ChatGPT below

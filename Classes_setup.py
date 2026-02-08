@@ -1,13 +1,11 @@
 class Orders:
     def __init__(self):
         self.number_of_orders = []      # done
-        self.total_quantity = []        # done
         self.order_number = []          # done
         self.status = []
         self.order_date = []            # done
         self.delivery_date = []         # done
         self.quantity = []              # done
-        self.quantity_in_assemblies = []
 #        self.used_in_assembly_id = []
 class OrderedPart:
     def __init__(self):
@@ -18,11 +16,12 @@ class OrderedPart:
         self.setup_time = []            # done
         self.process_time = []          # done
         self.stock_size = []            # done
-
+        self.total_quantity = []        # done
+        self.total_sub_part_quantity = [] # done
         self.is_main_assembly = []      # done
         self.sub_part_id = []           # done
         self.max_assembly_batch = []
-        self.sub_part_quantity = []
+        self.sub_part_quantity = []     # done
 
         self.orders = Orders()
 
