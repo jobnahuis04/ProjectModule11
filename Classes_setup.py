@@ -8,6 +8,7 @@ class Orders:
         self.delivery_date = []         # done
         self.quantity = []              # done
         self.quantity_in_assemblies = []
+#        self.used_in_assembly_id = []
 class OrderedPart:
     def __init__(self):
         self.part_id = []               # done
