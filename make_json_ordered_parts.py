@@ -23,7 +23,7 @@ ordered_part = OrderedPart()
 # simple parameters
 ordered_part.part_id = part_id.dropna().tolist()
 ordered_part.stock_size = stock_size.dropna().tolist()
-ordered_part.prize = price.dropna().tolist()
+ordered_part.price = price.dropna().tolist()
 
 # finding all rows that correspond to a part
 index_start_part = [None]*len(ordered_part.part_id)
