@@ -11,7 +11,7 @@ all_setup_time = df["Setup time (h)"].tolist()
 all_process_time = df["Process time (h)"].tolist()
 all_max_transport_batch = df["Max transport batch size (pieces) "].tolist()
 all_sub_part_id = df["Sub assy number"].tolist()
-all_quantity_of_sub_parts = df["Number of sub assy's"].tolist()
+all_quantity_of_sub_part = df["Number of sub assy's"].tolist()
 
 part_id = df["Part number"]
 stock_size = df["Size (indicative)"]
@@ -66,6 +66,21 @@ def write_assembly_data_to_class():
     # save_machining_info_to_class(all_sub_part_id,"sub_part_id")
 write_assembly_data_to_class()
 
+def match_subparts(all_data, class_variable):
+    for i in range(len(ordered_part.part_id)):
+        data = all_data[index_start_part[i]:index_end_part[i]]
+        getattr(ordered_part, class_variable).append(data)
+        setattr(
+            ordered_part,
+            class_variable,
+            [
+                [v for v in inner if not pd.isna(v)]
+                for inner in getattr(ordered_part, class_variable)
+            ]
+        )
+
+match_subparts(all_sub_part_id,"sub_part_id")
+match_subparts(all_quantity_of_sub_part, "quantity_of_sub_part")
 def write_order_to_class():
     for part_id in ordered_part.part_id:
         indices_parts = [i for i, x in enumerate(order_part_id) if x == part_id] # finding the indices in the order pattern
@@ -73,14 +88,6 @@ def write_order_to_class():
 
         ordered_part.orders.order_number.append([order_number[i] for i in indices_parts])
         ordered_part.orders.quantity.append([quantity[i] for i in indices_parts])
-
-        matching_quantities = [q for q, s in zip(all_quantity_of_sub_parts, all_sub_part_id) if s == part_id]
-
-        matching_ids = [s for q, s in zip(all_quantity_of_sub_parts, all_sub_part_id) if s == part_id]
-
-        ordered_part.sub_part_quantity.append(matching_quantities)
-        ordered_part.sub_part_id.append(matching_ids)
-
 
         ordered_part.total_quantity.append(sum([quantity[i] for i in indices_parts]))#+int(sum(matching_quantities)))
         ordered_part.orders.order_date.append([order_date[i] for i in indices_parts])
@@ -96,13 +103,14 @@ for i in range(len(ordered_part.part_id)):
     sub_parts = ordered_part.sub_part_id[i]
     if sub_parts == ['Purch. items']:
         continue
-    number_of_sub_parts = ordered_part.sub_part_quantity[i]
-    if isinstance(number_of_sub_parts, (int, float)):
-        number_of_sub_parts = [number_of_sub_parts]
-    total_number_main_part = ordered_part.total_quantity[i]
+    number_of_sub_parts = ordered_part.quantity_of_sub_part[i]
 
-    for j, part in enumerate(sub_parts):
-        ordered_part.total_sub_part_quantity[i][j] = (total_number_main_part * number_of_sub_parts[j])
+    total_number_main_part = ordered_part.total_quantity[i]
+    ordered_part.total_sub_part_quantity[i] = [None]*len(number_of_sub_parts)
+    for j, sub_part_id in enumerate(sub_parts):
+        ordered_part.total_sub_part_quantity[i][j] = (int(total_number_main_part) * int(number_of_sub_parts[j]))
+        index = [i for i, pid in enumerate(ordered_part.part_id) if pid == sub_part_id][0]
+        ordered_part.total_quantity[index] += int(total_number_main_part) * int(number_of_sub_parts[j])
 
 # --------------------------------------------------------------------------------ChatGPT below
 # Recursive converter

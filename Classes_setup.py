@@ -21,16 +21,16 @@ class OrderedPart:
         self.is_main_assembly = []      # done
         self.sub_part_id = []           # done
         self.max_assembly_batch = []
-        self.sub_part_quantity = []     # done
+        self.quantity_of_sub_part = []    # done
 
         self.orders = Orders()
 
-    class Machine:
-        def __init__(self):
-            self.type_of_machine = []
-            self.machine_id = []
-            self.active_part_id = []
-            self.idle_time = []
-            self.purchase_cost = []
+class Machine:
+    def __init__(self):
+        self.type_of_machine = []
+        self.machine_id = []
+        self.active_part_id = []
+        self.idle_time = []
+        self.purchase_cost = []
 
 
