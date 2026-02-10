@@ -9,6 +9,8 @@ df = pd.read_csv("./data/Product portfolio.csv")
 all_routes = df["Machine routing"].tolist()
 all_setup_time = df["Setup time (h)"].tolist()
 all_process_time = df["Process time (h)"].tolist()
+all_idle_time = df["Idle time (h)"].tolist()
+all_total_machine_time_all_parts = [sum([all_setup_time[i], all_process_time[i], all_idle_time[i]]) for i in range(len(all_setup_time))]
 all_max_transport_batch = df["Max transport batch size (pieces) "].tolist()
 all_sub_part_id = df["Sub assy number"].tolist()
 all_quantity_of_sub_part = df["Number of sub assy's"].tolist()
@@ -46,6 +48,9 @@ def save_machining_info_to_class(all_data, class_variable):
 save_machining_info_to_class(all_routes, "route")
 save_machining_info_to_class(all_setup_time, "setup_time")
 save_machining_info_to_class(all_process_time, "process_time")
+save_machining_info_to_class(all_idle_time, "idle_time")
+save_machining_info_to_class(all_total_machine_time_all_parts, "total_machine_time_all_parts")
+
 
 def save_first_attribute_to_class(all_data, class_variable):
     for i in range(len(ordered_part.part_id)):
@@ -94,23 +99,30 @@ def write_order_to_class():
         ordered_part.orders.delivery_date.append([delivery_date[i] for i in indices_parts])
 write_order_to_class()
 
-ordered_part.total_sub_part_quantity = [
-    [None for _ in sub_parts]
-    for sub_parts in ordered_part.sub_part_id
-]
+def assign_sub_part_data_to_class():
+    ordered_part.total_sub_part_quantity = [
+        [None for _ in sub_parts]
+        for sub_parts in ordered_part.sub_part_id
+    ]
 
-for i in range(len(ordered_part.part_id)):
-    sub_parts = ordered_part.sub_part_id[i]
-    if sub_parts == ['Purch. items']:
-        continue
-    number_of_sub_parts = ordered_part.quantity_of_sub_part[i]
+    for i in range(len(ordered_part.part_id)):
+        sub_parts = ordered_part.sub_part_id[i]
+        if sub_parts == ['Purch. items']:
+            continue
+        number_of_sub_parts = ordered_part.quantity_of_sub_part[i]
 
-    total_number_main_part = ordered_part.total_quantity[i]
-    ordered_part.total_sub_part_quantity[i] = [None]*len(number_of_sub_parts)
-    for j, sub_part_id in enumerate(sub_parts):
-        ordered_part.total_sub_part_quantity[i][j] = (int(total_number_main_part) * int(number_of_sub_parts[j]))
-        index = [i for i, pid in enumerate(ordered_part.part_id) if pid == sub_part_id][0]
-        ordered_part.total_quantity[index] += int(total_number_main_part) * int(number_of_sub_parts[j])
+        total_number_main_part = ordered_part.total_quantity[i]
+        ordered_part.total_sub_part_quantity[i] = [None]*len(number_of_sub_parts)
+        for j, sub_part_id in enumerate(sub_parts):
+            ordered_part.total_sub_part_quantity[i][j] = (int(total_number_main_part) * int(number_of_sub_parts[j]))
+            index = [i for i, pid in enumerate(ordered_part.part_id) if pid == sub_part_id][0]
+            ordered_part.total_quantity[index] += int(total_number_main_part) * int(number_of_sub_parts[j])
+assign_sub_part_data_to_class()
+
+def update_total_machine_time_all_parts():
+    for i in range(len(ordered_part.total_machine_time_all_parts)):
+        ordered_part.total_machine_time_all_parts[i] = [mt * ordered_part.total_quantity[i] for mt in ordered_part.total_machine_time_all_parts[i]]
+update_total_machine_time_all_parts()
 
 # --------------------------------------------------------------------------------ChatGPT below
 # Recursive converter

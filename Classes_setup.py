@@ -15,13 +15,15 @@ class OrderedPart:
         self.max_transport_batch = []   # done
         self.setup_time = []            # done
         self.process_time = []          # done
+        self.idle_time = []             # done
+        self.total_machine_time_all_parts = []
         self.stock_size = []            # done
         self.total_quantity = []        # done
         self.total_sub_part_quantity = [] # done
         self.is_main_assembly = []      # done
         self.sub_part_id = []           # done
         self.max_assembly_batch = []
-        self.quantity_of_sub_part = []    # done
+        self.quantity_of_sub_part = []  # done
 
         self.orders = Orders()
 
