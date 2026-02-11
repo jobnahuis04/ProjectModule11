@@ -3,7 +3,7 @@ import plotly.graph_objects as go
 from plotly.colors import qualitative
 from plotly.subplots import make_subplots
 
-
+# --- your existing functions ---
 def count_unique_paths_with_indices():
     route_to_indices = {}
 
@@ -41,9 +41,6 @@ def count_unique_paths_with_indices():
 
     return unique_routes, indices_per_route, total_times_per_route
 
-unique_routes, corresponding_indices, total_times_per_route = count_unique_paths_with_indices()
-print(total_times_per_route)
-
 def build_global_machine_color_map(all_routes):
     # collect all unique machines across all routes
     all_machines = []
@@ -60,31 +57,57 @@ def build_global_machine_color_map(all_routes):
 
     return color_map
 
-def make_sankey_for_one_route(unique_route, total_time, title, color_map):
-    node_colors = [color_map[m] for m in unique_route]
-    node_labels = [
-        f"{machine}<br>{total_time[i]:.1f} h"
-        for i, machine in enumerate(unique_route)
-    ]
-    fig = go.Figure(data=[go.Sankey(
-        node = dict(
-          pad = 15,
-          thickness = 20,
-          line = dict(color = "black", width = 0.5),
-          label = node_labels,
-          color = node_colors
-        ),
-        link=dict(
-            source=list(range(len(unique_route) - 1)),
-            target=list(range(1, len(unique_route))),
-            value=total_time,
-            customdata=total_time,
-            hovertemplate=
-            "%{source.label}<br>"
-        ))])
+def make_all_sankeys_on_page(unique_routes, total_times_per_route, color_map):
+    n_routes = len(unique_routes)
+    rows = (n_routes + 2) // 3  # 3 columns per row
+    cols = min(3, n_routes)
 
-    fig.update_layout(title_text="Production line "+str(title), font_size=10)
+    fig = make_subplots(
+        rows=rows,
+        cols=cols,
+        specs=[[{"type": "domain"}]*cols for _ in range(rows)],
+        subplot_titles=[f"Route {i+1}" for i in range(n_routes)]
+    )
+
+    for i, route in enumerate(unique_routes):
+        row = i // 3 + 1
+        col = i % 3 + 1
+
+        n = len(route)
+        source = list(range(n-1))
+        target = list(range(1, n))
+        values = total_times_per_route[i]
+
+        node_colors = [color_map[m] for m in route]
+        node_labels = [f"{m}<br>{values[j]:.1f} h" for j, m in enumerate(route)]
+
+        sankey = go.Sankey(
+            node=dict(
+                pad=15,
+                thickness=20,
+                line=dict(color="black", width=0.5),
+                label=node_labels,
+                color=node_colors
+            ),
+            link=dict(
+                source=source,
+                target=target,
+                value=values,
+                customdata=values,
+                hovertemplate="%{source.label}<br>Time: %{customdata:.1f} h<extra></extra>"
+            )
+        )
+
+        fig.add_trace(sankey, row=row, col=col)
+
+    fig.update_layout(
+        height=rows*400,
+        width=1200,
+        title_text="All Production Routes",
+        font_size=10
+    )
+
     fig.show()
+unique_routes, corresponding_indices, total_times_per_route = count_unique_paths_with_indices()
 color_map = build_global_machine_color_map(unique_routes)
-for i, route in enumerate(unique_routes):
-    make_sankey_for_one_route(route ,total_times_per_route[i],i,color_map)
+make_all_sankeys_on_page(unique_routes, total_times_per_route, color_map)
