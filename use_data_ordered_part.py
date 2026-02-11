@@ -1,6 +1,7 @@
 from make_json_ordered_parts import ordered_part
 import plotly.graph_objects as go
-from plotly.colors import n_colors, qualitative
+from plotly.colors import qualitative
+from plotly.subplots import make_subplots
 
 
 def count_unique_paths_with_indices():
@@ -34,6 +35,9 @@ def count_unique_paths_with_indices():
         total_times_per_route.append(totals)
 
     print(f"{len(unique_routes)} unique paths total")
+    for i, route in enumerate(unique_routes):
+        route.append("Done")
+        total_times_per_route[i].append(0)
 
     return unique_routes, indices_per_route, total_times_per_route
 
@@ -58,19 +62,26 @@ def build_global_machine_color_map(all_routes):
 
 def make_sankey_for_one_route(unique_route, total_time, title, color_map):
     node_colors = [color_map[m] for m in unique_route]
+    node_labels = [
+        f"{machine}<br>{total_time[i]:.1f} h"
+        for i, machine in enumerate(unique_route)
+    ]
     fig = go.Figure(data=[go.Sankey(
         node = dict(
           pad = 15,
           thickness = 20,
           line = dict(color = "black", width = 0.5),
-          label = unique_route,
+          label = node_labels,
           color = node_colors
         ),
-        link = dict(
+        link=dict(
             source=list(range(len(unique_route) - 1)),
-            target = list(range(1, len(unique_route))),
-            value = total_time
-      ))])
+            target=list(range(1, len(unique_route))),
+            value=total_time,
+            customdata=total_time,
+            hovertemplate=
+            "%{source.label}<br>"
+        ))])
 
     fig.update_layout(title_text="Production line "+str(title), font_size=10)
     fig.show()
