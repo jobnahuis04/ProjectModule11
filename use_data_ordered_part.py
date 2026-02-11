@@ -1,6 +1,6 @@
 from make_json_ordered_parts import ordered_part
 import plotly.graph_objects as go
-from plotly.colors import n_colors
+from plotly.colors import n_colors, qualitative
 
 
 def count_unique_paths_with_indices():
@@ -40,15 +40,31 @@ def count_unique_paths_with_indices():
 unique_routes, corresponding_indices, total_times_per_route = count_unique_paths_with_indices()
 print(total_times_per_route)
 
+def build_global_machine_color_map(all_routes):
+    # collect all unique machines across all routes
+    all_machines = []
+    for route in all_routes:
+        for machine in route:
+            if machine not in all_machines:
+                all_machines.append(machine)
 
-def make_sankey_for_one_route(unique_route,total_time,title):
+    palette = qualitative.Plotly
+
+    color_map = {}
+    for i, machine in enumerate(all_machines):
+        color_map[machine] = palette[i % len(palette)]
+
+    return color_map
+
+def make_sankey_for_one_route(unique_route, total_time, title, color_map):
+    node_colors = [color_map[m] for m in unique_route]
     fig = go.Figure(data=[go.Sankey(
         node = dict(
           pad = 15,
           thickness = 20,
           line = dict(color = "black", width = 0.5),
           label = unique_route,
-          color = "blue"
+          color = node_colors
         ),
         link = dict(
             source=list(range(len(unique_route) - 1)),
@@ -58,5 +74,6 @@ def make_sankey_for_one_route(unique_route,total_time,title):
 
     fig.update_layout(title_text="Production line "+str(title), font_size=10)
     fig.show()
+color_map = build_global_machine_color_map(unique_routes)
 for i, route in enumerate(unique_routes):
-    make_sankey_for_one_route(route ,total_times_per_route[i],i)
+    make_sankey_for_one_route(route ,total_times_per_route[i],i,color_map)
