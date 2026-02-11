@@ -6,7 +6,8 @@ class Orders:
         self.order_date = []            # done
         self.delivery_date = []         # done
         self.quantity = []              # done
-#        self.used_in_assembly_id = []
+        self.parent_part_id = []        # done
+        self.parent_quantity = []       # done
 class OrderedPart:
     def __init__(self):
         self.part_id = []               # done

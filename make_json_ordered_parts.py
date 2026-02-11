@@ -104,19 +104,28 @@ def assign_sub_part_data_to_class():
         [None for _ in sub_parts]
         for sub_parts in ordered_part.sub_part_id
     ]
+    ordered_part.orders.parent_part_id = [[] for _ in range(len(ordered_part.part_id))]
+    ordered_part.orders.parent_quantity = [[] for _ in range(len(ordered_part.part_id))]
 
     for i in range(len(ordered_part.part_id)):
         sub_parts = ordered_part.sub_part_id[i]
         if sub_parts == ['Purch. items']:
             continue
         number_of_sub_parts = ordered_part.quantity_of_sub_part[i]
-
         total_number_main_part = ordered_part.total_quantity[i]
+
         ordered_part.total_sub_part_quantity[i] = [None]*len(number_of_sub_parts)
-        for j, sub_part_id in enumerate(sub_parts):
+        for j, sub_part_id in enumerate(sub_parts): # j is the index of the sub part in the main part 1, 2 or 3 maybe 4
             ordered_part.total_sub_part_quantity[i][j] = (int(total_number_main_part) * int(number_of_sub_parts[j]))
             index = [i for i, pid in enumerate(ordered_part.part_id) if pid == sub_part_id][0]
             ordered_part.total_quantity[index] += int(total_number_main_part) * int(number_of_sub_parts[j])
+
+            ordered_part.orders.order_number[index].append(ordered_part.orders.order_number[i]) # hard one to understand, saves order numbers of main parts to subparts
+            ordered_part.orders.order_date[index].append(ordered_part.orders.order_date[i])
+            ordered_part.orders.delivery_date[index].append(ordered_part.orders.delivery_date[i])
+            ordered_part.orders.parent_part_id[index].append(ordered_part.part_id[i])
+            ordered_part.orders.parent_quantity[index].append(ordered_part.orders.quantity[i])
+
 assign_sub_part_data_to_class()
 
 def update_total_machine_time_all_parts():
