@@ -3,7 +3,6 @@ import plotly.graph_objects as go
 from plotly.colors import qualitative
 from plotly.subplots import make_subplots
 
-# --- your existing functions ---
 def count_unique_paths_with_indices():
     route_to_indices = {}
 
@@ -22,11 +21,9 @@ def count_unique_paths_with_indices():
         unique_routes.append(route)
         indices_per_route.append(indices)
 
-        # initialize totals per machine step
         n = len(route)
         totals = [0.0] * n
 
-        # sum times for all parts following this route
         for idx in indices:
             times = ordered_part.total_machine_time_all_parts[idx]
             for j in range(n):
@@ -42,18 +39,17 @@ def count_unique_paths_with_indices():
     return unique_routes, indices_per_route, total_times_per_route
 
 def build_global_machine_color_map(all_routes):
-    # collect all unique machines across all routes
     all_machines = []
     for route in all_routes:
         for machine in route:
             if machine not in all_machines:
                 all_machines.append(machine)
 
-    palette = qualitative.Plotly
+    colours = qualitative.Plotly
 
     color_map = {}
     for i, machine in enumerate(all_machines):
-        color_map[machine] = palette[i % len(palette)]
+        color_map[machine] = colours[i % len(colours)]
 
     return color_map
 
@@ -66,7 +62,7 @@ def make_all_sankeys_on_page(unique_routes, total_times_per_route, color_map):
         rows=rows,
         cols=cols,
         specs=[[{"type": "domain"}]*cols for _ in range(rows)],
-        subplot_titles=[f"Route {i+1}" for i in range(n_routes)]
+        subplot_titles=[f"Route {i}" for i in range(n_routes)]
     )
 
     for i, route in enumerate(unique_routes):
@@ -93,8 +89,7 @@ def make_all_sankeys_on_page(unique_routes, total_times_per_route, color_map):
                 source=source,
                 target=target,
                 value=values,
-                customdata=values,
-                hovertemplate="%{source.label}<br>Time: %{customdata:.1f} h<extra></extra>"
+                customdata=values
             )
         )
 
@@ -102,7 +97,7 @@ def make_all_sankeys_on_page(unique_routes, total_times_per_route, color_map):
 
     fig.update_layout(
         height=rows*400,
-        width=1200,
+        width=3000,
         title_text="All Production Routes",
         font_size=10
     )
