@@ -131,7 +131,31 @@ assign_sub_part_data_to_class()
 def update_total_machine_time_all_parts():
     for i in range(len(ordered_part.total_machine_time_all_parts)):
         ordered_part.total_machine_time_all_parts[i] = [mt * ordered_part.total_quantity[i] for mt in ordered_part.total_machine_time_all_parts[i]]
+        ordered_part.total_time_all_parts.append(sum(ordered_part.total_machine_time_all_parts[i]))
 update_total_machine_time_all_parts()
+
+def assign_route_number_to_class():
+    ordered_part.route_number = [None]*len(ordered_part.part_id)
+    route_to_indices = {}
+
+    for i, route in enumerate(ordered_part.route):
+        key = tuple(route)
+        if key not in route_to_indices:
+            route_to_indices[key] = []
+        route_to_indices[key].append(i)
+
+    unique_routes = []
+    indices_per_route = []
+    n = 0
+    for route_tuple, indices in route_to_indices.items():
+        route = list(route_tuple)
+        unique_routes.append(route)
+        indices_per_route.append(indices)
+        for index in indices:
+            ordered_part.route_number[index] = n
+        n += 1
+
+assign_route_number_to_class()
 
 # --------------------------------------------------------------------------------ChatGPT below
 # Recursive converter

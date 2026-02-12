@@ -13,11 +13,13 @@ class OrderedPart:
         self.part_id = []               # done
         self.price = []                 # done
         self.route = []                 # done
+        self.route_number = []
         self.max_transport_batch = []   # done
         self.setup_time = []            # done
         self.process_time = []          # done
         self.idle_time = []             # done
-        self.total_machine_time_all_parts = []
+        self.total_machine_time_all_parts = [] # done
+        self.total_time_all_parts = []  # done
         self.stock_size = []            # done
         self.total_quantity = []        # done
         self.total_sub_part_quantity = [] # done
