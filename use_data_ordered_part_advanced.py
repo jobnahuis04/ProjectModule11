@@ -2,7 +2,7 @@ from make_json_ordered_parts import ordered_part
 import plotly.graph_objects as go
 from plotly.colors import qualitative
 from plotly.subplots import make_subplots
-
+#Todo make usefull by adding colors per order
 def count_unique_paths_with_indices():
     route_to_indices = {}
 
