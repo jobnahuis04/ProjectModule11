@@ -1,10 +1,9 @@
 from Classes_setup import *
 import pandas as pd
 import json
-from datetime import datetime
 import numpy as np
 
-df = pd.read_csv("./data/Product portfolio.csv")
+df = pd.read_csv("../data/Product portfolio.csv")
 
 all_routes = df["Machine routing"].tolist()
 all_setup_time = df["Setup time (h)"].tolist()
@@ -58,7 +57,7 @@ def save_first_attribute_to_class(all_data, class_variable):
         getattr(ordered_part, class_variable).append(data)
 save_first_attribute_to_class(all_max_transport_batch, "max_transport_batch")
 
-df_order = pd.read_csv("./data/Order pattern.csv")
+df_order = pd.read_csv("../data/Order pattern.csv")
 order_part_id = df_order["Part number"].tolist()
 order_number = df_order["Order number"].tolist()
 quantity = df_order["Number of parts"].tolist()
@@ -171,5 +170,5 @@ def class_to_dict(obj):
 
 data_dict = class_to_dict(ordered_part)
 #----------------------------------------------------------------------------------------------
-with open("./data/ordered_part.json", "w") as f:
+with open("../data/ordered_part.json", "w") as f:
     json.dump(data_dict, f, indent=4)

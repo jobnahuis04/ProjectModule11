@@ -1,6 +1,5 @@
 from matplotlib import pyplot as plt
 from pygments.lexers import go
-
 from make_json_ordered_parts import ordered_part
 from plotly.colors import qualitative
 
