@@ -3,11 +3,12 @@ from pygments.lexers import go
 from make_json_ordered_parts import ordered_part
 from plotly.colors import qualitative
 
+
 def build_route_color_map(all_routes_import):
-    all_routes= []
+    all_routes = []
     for route in all_routes_import:
-            if route not in all_routes:
-                all_routes.append(route)
+        if route not in all_routes:
+            all_routes.append(route)
 
     colours = qualitative.Plotly
     color_map = {}
@@ -15,6 +16,7 @@ def build_route_color_map(all_routes_import):
         color_map[route] = colours[i % len(colours)]
 
     return color_map
+
 
 def plot_different_properties(properties, units):
     x_property = properties[0]
@@ -42,6 +44,7 @@ def plot_different_properties(properties, units):
     plt.tight_layout()
     plt.show()
 
+
 def plot_different_production_lines(properties, units):
     x_property = properties[0]
     y_property = properties[1]
@@ -64,7 +67,8 @@ def plot_different_production_lines(properties, units):
 
     color_map = build_route_color_map(route_numbers_2)
 
-    combined = list(zip(route_numbers_2, production_lines_y, production_lines_x))
+    combined = list(
+        zip(route_numbers_2, production_lines_y, production_lines_x))
 
     # sort by production line
     combined.sort(reverse=False, key=lambda x: x[0])
@@ -79,6 +83,7 @@ def plot_different_production_lines(properties, units):
     plt.xticks(rotation=90)
     plt.tight_layout()
     plt.show()
+
 
 properties = [["part_id", "total_quantity"],
               ["part_id", "total_time_all_parts"]]
