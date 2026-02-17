@@ -170,11 +170,9 @@ assign_sub_part_data_to_class()
 
 def update_total_machine_time_all_parts():
     for i in range(len(ordered_part.total_machine_time_all_parts)):
-        ordered_part.total_machine_time_all_parts[i] = [
-            mt * ordered_part.total_quantity[i] for mt in ordered_part.total_machine_time_all_parts[i]]
-        ordered_part.total_time_all_parts.append(
-            sum(ordered_part.total_machine_time_all_parts[i]))
-
+        ordered_part.total_machine_time_all_parts[i] = [mt * ordered_part.total_quantity[i] for mt in ordered_part.total_machine_time_all_parts[i]]
+        ordered_part.total_machine_time_all_parts[i] = [time + setup_time for time,setup_time in zip(ordered_part.total_machine_time_all_parts[i],ordered_part.setup_time[i])]
+        ordered_part.total_time_all_parts.append(sum(ordered_part.total_machine_time_all_parts[i]))
 
 update_total_machine_time_all_parts()
 

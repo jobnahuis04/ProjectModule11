@@ -99,7 +99,7 @@ def make_all_sankeys_on_page(unique_routes, total_times_per_route, color_map):
         height=rows*400,
         width=2000,
         title_text="All Production Routes",
-        font_size=10
+        font_size=14
     )
 
     fig.show()
