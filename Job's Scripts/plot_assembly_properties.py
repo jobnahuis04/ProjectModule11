@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 from pygments.lexers import go
 from make_json_ordered_parts import ordered_part
 from plotly.colors import qualitative
-
+#todo under development by Job
 def build_part_color_map(all_parts_import):
     all_parts = [part for part in all_parts_import if part.endswith("01")]
     colours = qualitative.Plotly
@@ -18,16 +18,24 @@ def plot_different_properties(properties, units):
 
     x_values = getattr(ordered_part, x_property)
     y_values = getattr(ordered_part, y_property)
-    route_numbers = ordered_part.route_number
+    part_numbers = ordered_part.part_id
 
     color_map = build_part_color_map(ordered_part.part_id)
 
-    combined = list(zip(route_numbers, y_values, x_values))
+    combined = list(zip(y_values, x_values, part_numbers))
 
-    # sort by production line
+    # sort by part number or time
     combined.sort(reverse=False, key=lambda x: x[0])
-    route_numbers, y_values, x_values = zip(*combined)
-    color_values = [color_map[number] for number in route_numbers]
+    y_values, x_values, part_numbers = zip(*combined)
+    color_values = [None]*len(part_numbers)
+    print(color_map)
+    j = 0
+    for i, part_id in enumerate(part_numbers):
+        if part_id.endswith("01"):
+            color_values[i] = color_map[part_id]
+            j+=1
+        else:
+            color_values[i] = color_map[part_numbers[0]]
 
     plt.figure()
     plt.bar(x_values, y_values, color=color_values)
