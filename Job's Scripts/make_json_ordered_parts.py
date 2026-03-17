@@ -145,8 +145,9 @@ def assign_sub_part_data_to_class():
             None]*len(number_of_sub_parts)
         # j is the index of the sub part in the main part 1, 2 or 3 maybe 4
         for j, sub_part_id in enumerate(sub_parts):
-            ordered_part.total_sub_part_quantity[i][j] = (
-                int(total_number_main_part) * int(number_of_sub_parts[j]))
+            if sub_part_id == 'Purch. items':
+                continue
+            ordered_part.total_sub_part_quantity[i][j] = (int(total_number_main_part) * int(number_of_sub_parts[j]))
             index = [i for i, pid in enumerate(
                 ordered_part.part_id) if pid == sub_part_id][0]
             ordered_part.total_quantity[index] += int(
