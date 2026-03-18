@@ -5,6 +5,8 @@ class Orders:
         self.status = []
         self.order_date = []            # done
         self.delivery_date = []         # done
+        self.days_to_produce = []       # done
+        self.parts_per_day = []         # done
         self.quantity = []              # done
         self.parent_part_id = []        # done
         self.parent_quantity = []       # done

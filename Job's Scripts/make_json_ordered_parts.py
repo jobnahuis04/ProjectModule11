@@ -9,9 +9,9 @@ all_routes = df["Machine routing"].tolist()
 all_setup_time = df["Setup time (h)"].tolist()
 all_process_time = df["Process time (h)"].tolist()
 all_idle_time = df["Idle time (h)"].tolist()
-all_total_machine_time_all_parts = [sum([all_process_time[i]]) for i in range(
-    len(all_setup_time))]  # setup and idle time left out since it is per batch
 all_max_transport_batch = df["Max transport batch size (pieces) "].tolist()
+all_avg_idle_time = [all_idle_time[i]/all_max_transport_batch[i] for i in range(len(all_idle_time))]
+all_total_machine_time_all_parts = [sum([all_process_time[i]],all_avg_idle_time[i]) for i in range(len(all_setup_time))]  # setup and idle time left out since it is per batch
 all_sub_part_id = df["Sub assy number"].tolist()
 all_quantity_of_sub_part = df["Number of sub assy's"].tolist()
 
@@ -71,7 +71,8 @@ order_number = df_order["Order number"].tolist()
 quantity = df_order["Number of parts"].tolist()
 order_date = df_order["Order date"].tolist()
 delivery_date = df_order["Desired delivery date"].tolist()
-
+days_to_produce = [(pd.to_datetime(delivery_date[i]) - pd.to_datetime(order_date[i])).days-1 for i in range(len(order_date))] # assuming no manufacturing on the order and delivery day
+parts_per_day = [quantity[i]/days_to_produce[i] for i in range(len(quantity))]
 
 def write_assembly_data_to_class():
     ordered_part.is_main_assembly = [False]*len(ordered_part.part_id)
@@ -119,6 +120,9 @@ def write_order_to_class():
             [order_date[i] for i in indices_parts])
         ordered_part.orders.delivery_date.append(
             [delivery_date[i] for i in indices_parts])
+        ordered_part.orders.days_to_produce.append([days_to_produce[i] for i in indices_parts])
+        ordered_part.orders.parts_per_day.append([parts_per_day[i] for i in indices_parts])
+
 
 
 write_order_to_class()
@@ -156,12 +160,22 @@ def assign_sub_part_data_to_class():
             # hard one to understand, saves order numbers of main parts to subparts
             ordered_part.orders.order_number[index].append(
                 ordered_part.orders.order_number[i])
+
             ordered_part.orders.order_date[index].append(
                 ordered_part.orders.order_date[i])
+
             ordered_part.orders.delivery_date[index].append(
                 ordered_part.orders.delivery_date[i])
+
+            ordered_part.orders.days_to_produce[index].append(
+                ordered_part.orders.days_to_produce[i])
+
+            ordered_part.orders.parts_per_day[index].append(
+                ordered_part.orders.parts_per_day[i])
+
             ordered_part.orders.parent_part_id[index].append(
                 ordered_part.part_id[i])
+
             ordered_part.orders.parent_quantity[index].append(
                 ordered_part.orders.quantity[i])
 
