@@ -20,6 +20,7 @@ class OrderedPart:
         self.setup_time = []            # done
         self.process_time = []          # done
         self.idle_time = []             # done
+        self.avg_idle_time = []         # done
         self.total_machine_time_all_parts = [] # done
         self.total_time_all_parts = []  # done
         self.stock_size = []            # done

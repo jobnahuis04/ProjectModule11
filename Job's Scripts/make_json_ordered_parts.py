@@ -53,6 +53,8 @@ save_machining_info_to_class(all_routes, "route")
 save_machining_info_to_class(all_setup_time, "setup_time")
 save_machining_info_to_class(all_process_time, "process_time")
 save_machining_info_to_class(all_idle_time, "idle_time")
+save_machining_info_to_class(all_avg_idle_time, "avg_idle_time")
+
 save_machining_info_to_class(
     all_total_machine_time_all_parts, "total_machine_time_all_parts")
 
@@ -71,7 +73,7 @@ order_number = df_order["Order number"].tolist()
 quantity = df_order["Number of parts"].tolist()
 order_date = df_order["Order date"].tolist()
 delivery_date = df_order["Desired delivery date"].tolist()
-days_to_produce = [(pd.to_datetime(delivery_date[i]) - pd.to_datetime(order_date[i])).days-1 for i in range(len(order_date))] # assuming no manufacturing on the order and delivery day
+days_to_produce = [(pd.to_datetime(delivery_date[i]) - pd.to_datetime(order_date[i])).days for i in range(len(order_date))]
 parts_per_day = [quantity[i]/days_to_produce[i] for i in range(len(quantity))]
 
 def write_assembly_data_to_class():
