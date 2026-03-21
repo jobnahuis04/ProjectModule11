@@ -20,6 +20,20 @@ class Planning:
         self.setup_times = []
         self.route = []
         self.route_time = []
+        self.machine_quantity = []
+planning = Planning()
+planning.machine_quantity = [
+    [1,1,1,1,1,1], # route 0
+    [1,1,1,1], # route 1
+    [1,1,1,1], # route 2
+    [1,1,1,1,1], # route 3
+    [1,1,1,1,1,1,1,1], # route 4
+    [1,1,1,1,1,1,1], # route 5
+    [1], # route 6
+    [1,1,1,1,1], # route 7
+    [1,1,1], # route 8
+    [1,2,1] # route 9
+    ]
 
 df = pd.read_csv("../data/Order pattern.csv")
 
@@ -52,7 +66,6 @@ df_clean = pd.DataFrame({
     "quantity": flat_quantities
 })
 
-planning = Planning()
 seen = set()
 unique_route_numbers = []
 part_routes = []
@@ -85,10 +98,11 @@ for i, day in enumerate(pd.date_range(start=start_date, end=end_date)):
         route_number = ordered_part.route_number[idx]
         machine_time = [
             (ordered_part.avg_idle_time[idx][j] + ordered_part.process_time[idx][j]) * planning.part_quantities[i][p]
+            / planning.machine_quantity[route_number][j]
             for j in range(len(ordered_part.avg_idle_time[idx]))
         ]
         for l in range(len(machine_time)):
-            planning.route_time[i][route_number][l] += machine_time[l] + ordered_part.setup_time[idx][l]
+            planning.route_time[i][route_number][l] += machine_time[l] + ordered_part.setup_time[idx][l]*planning.machine_quantity[route_number][l] # setup time doubles with 2 machines.
 
 
 for j in unique_route_numbers:
