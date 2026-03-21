@@ -77,7 +77,7 @@ for i, day in enumerate(pd.date_range(start=start_date, end=end_date)):
 
     planning.route_time.append([])
 
-    for route in part_routes:
+    for j, route in enumerate(part_routes):
         planning.route_time[i].append([0] * len(route))
 
     for p, part_number in enumerate(planning.part_numbers[i]):
@@ -88,20 +88,21 @@ for i, day in enumerate(pd.date_range(start=start_date, end=end_date)):
             for j in range(len(ordered_part.avg_idle_time[idx]))
         ]
         for l in range(len(machine_time)):
-            planning.route_time[i][route_number][l] += machine_time[l]
+            planning.route_time[i][route_number][l] += machine_time[l] + ordered_part.setup_time[idx][l]
 
-
-plt.figure()
 
 for j in unique_route_numbers:
-    y = [
-        sum(planning.route_time[i][j]) if j < len(planning.route_time[i]) else 0
-        for i in range(len(planning.day))
-    ]
-    plt.plot(planning.day, y, label=f"Production line {j}")
+    plt.figure()
+    for k, machine in enumerate(part_routes[j]):
+        y = [
+            planning.route_time[i][j][k] for i in range(len(planning.day))
+         ]
+        plt.plot(planning.day, y, label= f"step {k+1}: {machine}")
 
-plt.xlabel("Day")
-plt.ylabel("Total machine time")
-plt.legend(loc="upper right")
-plt.xticks(rotation=45)
+    plt.xlabel("Day")
+    plt.ylabel("Total machine time per day")
+    plt.title(f"Production line {j}")
+    plt.legend(loc="upper right")
+    plt.xticks(rotation=45)
 plt.show()
+
