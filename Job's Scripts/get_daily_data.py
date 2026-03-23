@@ -114,7 +114,7 @@ for j in unique_route_numbers[0:5]:
         plt.plot(planning.day, y, label= f"step {k+1}: {machine}({planning.machine_quantity[j][k]}x)")
 
     plt.xlabel("Day")
-    plt.ylabel("Total machine time per day")
+    plt.ylabel("Total machine time per day [h]")
     plt.title(f"Production line {j}")
     plt.legend(loc="upper right")
     plt.ylim(0, 20)
@@ -132,7 +132,7 @@ for j in unique_route_numbers[5::]:
         plt.plot(planning.day, y, label= f"step {k+1}: {machine}({planning.machine_quantity[j][k]}x)")
 
     plt.xlabel("Day")
-    plt.ylabel("Total machine time per day")
+    plt.ylabel("Total machine time per day [h]")
     plt.title(f"Production line {j}")
     plt.legend(loc="upper right")
     plt.ylim(0, 20)
