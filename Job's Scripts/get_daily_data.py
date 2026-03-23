@@ -23,16 +23,16 @@ class Planning:
         self.machine_quantity = []
 planning = Planning()
 planning.machine_quantity = [
-    [1,1,1,1,1,1], # route 0
-    [1,1,1,1], # route 1
-    [1,1,1,1], # route 2
-    [1,1,1,1,1], # route 3
-    [1,1,1,1,1,1,1,1], # route 4
-    [1,1,1,1,1,1,1], # route 5
-    [1], # route 6
+    [4,12,14,12,7,4], # route 0 MC has high setup time
+    [6,2,1,2], # route 1 MC has high setup time
+    [4,7,4,2], # route 2
+    [2,9,2,1,2], # route 3 MC has high setup time
+    [1,0.4,1,1.6,1,1,1,1], # route 4
+    [3,0.4,1,4,0.6,2,1], # route 5
+    [1], # route 6 finished
     [1,1,1,1,1], # route 7
     [1,1,1], # route 8
-    [1,2,1] # route 9
+    [1,1,1] # route 9
     ]
 
 df = pd.read_csv("../data/Order pattern.csv")
@@ -102,21 +102,42 @@ for i, day in enumerate(pd.date_range(start=start_date, end=end_date)):
             for j in range(len(ordered_part.avg_idle_time[idx]))
         ]
         for l in range(len(machine_time)):
-            planning.route_time[i][route_number][l] += machine_time[l] + ordered_part.setup_time[idx][l]*planning.machine_quantity[route_number][l] # setup time doubles with 2 machines.
+            planning.route_time[i][route_number][l] += machine_time[l] + ordered_part.setup_time[idx][l] #*planning.machine_quantity[route_number][l] # setup time doubles with 2 machines.
 
 
-for j in unique_route_numbers:
+for j in unique_route_numbers[0:5]:
     plt.figure()
     for k, machine in enumerate(part_routes[j]):
         y = [
             planning.route_time[i][j][k] for i in range(len(planning.day))
          ]
-        plt.plot(planning.day, y, label= f"step {k+1}: {machine}")
+        plt.plot(planning.day, y, label= f"step {k+1}: {machine}({planning.machine_quantity[j][k]}x)")
 
     plt.xlabel("Day")
     plt.ylabel("Total machine time per day")
     plt.title(f"Production line {j}")
     plt.legend(loc="upper right")
+    plt.ylim(0, 20)
+    plt.xlim(start_date, end_date)
     plt.xticks(rotation=45)
+    plt.savefig(f"{j}.png")
+
+
+for j in unique_route_numbers[5::]:
+    plt.figure()
+    for k, machine in enumerate(part_routes[j]):
+        y = [
+            planning.route_time[i][j][k] for i in range(len(planning.day))
+         ]
+        plt.plot(planning.day, y, label= f"step {k+1}: {machine}({planning.machine_quantity[j][k]}x)")
+
+    plt.xlabel("Day")
+    plt.ylabel("Total machine time per day")
+    plt.title(f"Production line {j}")
+    plt.legend(loc="upper right")
+    plt.ylim(0, 20)
+    plt.xlim(start_date, end_date)
+    plt.xticks(rotation=45)
+    plt.savefig(f"{j}.png")
 plt.show()
 
