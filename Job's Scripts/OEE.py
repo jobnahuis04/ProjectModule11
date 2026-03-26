@@ -19,8 +19,13 @@ class Available_machines:
         self.total_time = shifts * hours * days
 
         self.old_machine_quantity = dict(zip(self.machine_id, [5, 4, 5, 5, 2, 4, 4, 2]))
-        self.new_machine_quantity = dict(zip(self.machine_id, [6, 3, 7, 3, 4, 5, 3, 5]))
-                                                            # [1.1, -0.8, 1.55, -1, 1.6, 0, -1.1, 0.67]
+        #self.new_machine_quantity = dict(zip(self.machine_id, [5, 4, 6, 4, 3, 5, 4, 5])) to match planning
+        #self.new_machine_quantity = dict(zip(self.machine_id, [6, 3, 7, 3, 4, 5, 3, 5])) to match OEE calc
+        # [1.1, -0.8, 1.55, -1, 1.6, 0, -1.1, 0.67]
+
+        self.new_machine_quantity = dict(zip(self.machine_id, [5, 4, 7, 4, 3, 5, 4, 5])) #CMM and TM have very high setup times so one machine more
+                                                            # [0, 0, 0, 0, 0, 0, 0, 0]
+
         self.process_time_old = dict.fromkeys(self.machine_id, 0)
         self.process_time_new = dict.fromkeys(self.machine_id, 0)
 
@@ -50,3 +55,4 @@ for j in range(len(ordered_part.process_time)):
 available_machines.calc_new_values1()
 print(available_machines.OEE_old)
 print(available_machines.OEE_new)
+print(available_machines.new_machine_quantity)
