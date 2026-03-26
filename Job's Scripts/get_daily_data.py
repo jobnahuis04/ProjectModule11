@@ -3,6 +3,7 @@ from matplotlib.style.core import available
 from make_json_ordered_parts import ordered_part
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 
 def flatten(x):
     if isinstance(x, list):
@@ -35,16 +36,16 @@ class Planning:
 planning = Planning()
 
 planning.machine_quantity = [
-    [4,12,14,12,7,4], # route 0 MC has high setup time
-    [6,2,1,2], # route 1 MC has high setup time
-    [4,7,4,2], # route 2
-    [2,9,2,1,2], # route 3 MC has high setup time
-    [1,0.4,1,1.6,1,1,1,1], # route 4
-    [3,0.4,1,4,0.6,2,1], # route 5
-    [1], # route 6 finished
-    [1,1,1,1,1], # route 7
-    [1,1,1], # route 8
-    [1,1,1] # route 9
+    [2,2,2,2,1,2], # route 0 / SM,TM,MM,GM,CMM,A
+    [2,0.75,0.5,1], # route 1 / MC,GM,CMM,A
+    [1,2,1.5,1], # route 2 / SM,MM,DM,CMM
+    [1,2,1,0.75,0.75], # route 3 / SM,MC,GM,CMM,A
+    [0.5,0.25,0.5,0.5,0.5,0.5,0.25,0.25], # route 4 / SM,TM,MM,TM,GM,DM,CMM,A
+    [0.5,0.1,0.25,0.5,0.2,0.25,0.2], # route 5 / TM,CMM,TM,GM,CMM,MM,CMM
+    [0.33], # route 6 / A
+    [0.1,0.2,0.3,0.25,0.1], # route 7 / SM,TM,MM,GM,CMM
+    [0.1,0.1,0.1], # route 8 / SM,TM,MM
+    [0.2,0.4,0.4] # route 9 / SM,MM,DM
     ]
 
 flat_order_dates = []
@@ -69,7 +70,7 @@ df_clean = pd.DataFrame({
     "delivery_date": pd.to_datetime(flat_delivery_dates),
     "quantity": flat_quantities
 })
-
+part_index_map = {p: i for i, p in enumerate(ordered_part.part_id)}
 seen = set()
 unique_route_numbers = []
 part_routes = []
@@ -88,9 +89,6 @@ for i, day in enumerate(pd.date_range(start=start_date, end=end_date)):
     planning.day.append(day.date())
     planning.part_numbers.append(grouped.index.tolist())
     planning.part_quantities.append(grouped.values.tolist())
-    planning.route.append([]*len(set(ordered_part.route_number)))
-    #planning.route_time.append([]*len(set(ordered_part.route_number)))
-    #part_routes = list({tuple(r) for r in ordered_part.route})
 
     planning.route_time.append([])
 
@@ -98,52 +96,70 @@ for i, day in enumerate(pd.date_range(start=start_date, end=end_date)):
         planning.route_time[i].append([0] * len(route))
 
     for p, part_number in enumerate(planning.part_numbers[i]):
-        idx = ordered_part.part_id.index(part_number)
+        idx = part_index_map[part_number]
         route_number = ordered_part.route_number[idx]
-        machine_time = [
-            (ordered_part.avg_idle_time[idx][j] + ordered_part.process_time[idx][j]) * planning.part_quantities[i][p]
-            / planning.machine_quantity[route_number][j]
-            for j in range(len(ordered_part.avg_idle_time[idx]))
+
+        # add setup time ONCE
+        for l in range(len(ordered_part.setup_time[idx])):
+            mq = planning.machine_quantity[route_number][l]
+            planning.route_time[i][route_number][l] += ordered_part.setup_time[idx][l]/mq
+
+        # add production time
+        for j in range(len(ordered_part.avg_idle_time[idx])):
+            mq = planning.machine_quantity[route_number][j]
+            machine_time = (
+                        (ordered_part.avg_idle_time[idx][j] + ordered_part.process_time[idx][j])
+                        * planning.part_quantities[i][p]
+                        / mq
+            )
+            planning.route_time[i][route_number][j] += machine_time
+
+
+for j in unique_route_numbers:
+    plt.figure()
+
+    for k, machine in enumerate(part_routes[j]):
+        y = [
+            planning.route_time[i][j][k] for i in range(len(planning.day))
         ]
-        for l in range(len(machine_time)):
-            planning.route_time[i][route_number][l] += machine_time[l] + ordered_part.setup_time[idx][l] #*planning.machine_quantity[route_number][l] # setup time doubles with 2 machines.
 
-
-
-
-for j in unique_route_numbers[0:5]:
-    plt.figure()
-    for k, machine in enumerate(part_routes[j]):
-        y = [
-            planning.route_time[i][j][k] for i in range(len(planning.day))
-         ]
-        plt.plot(planning.day, y, label= f"step {k+1}: {machine}({planning.machine_quantity[j][k]}x)")
-
+        line, = plt.plot(
+            planning.day,
+            y,
+            label=f"step {k+1}: {machine}({planning.machine_quantity[j][k]}x)"
+        )
+        plt.axhline(
+            np.mean(y),
+            linestyle="--",
+            color=line.get_color(),
+            label="_nolegend_"  # <-- key trick
+        )
+    plt.axhline(16, linestyle="-", color="k", label="hours in a day")
     plt.xlabel("Day")
     plt.ylabel("Total machine time per day [h]")
     plt.title(f"Production line {j}")
     plt.legend(loc="upper right")
-    plt.ylim(0, 20)
+    plt.ylim(0, 40)
     plt.xlim(start_date, end_date)
     plt.xticks(rotation=45)
     plt.savefig(f"{j}.png")
 
 
-for j in unique_route_numbers[5::]:
-    plt.figure()
-    for k, machine in enumerate(part_routes[j]):
-        y = [
-            planning.route_time[i][j][k] for i in range(len(planning.day))
-         ]
-        plt.plot(planning.day, y, label= f"step {k+1}: {machine}({planning.machine_quantity[j][k]}x)")
-
-    plt.xlabel("Day")
-    plt.ylabel("Total machine time per day [h]")
-    plt.title(f"Production line {j}")
-    plt.legend(loc="upper right")
-    plt.ylim(0, 20)
-    plt.xlim(start_date, end_date)
-    plt.xticks(rotation=45)
-    plt.savefig(f"{j}.png")
+# for j in unique_route_numbers[5::]:
+#     plt.figure()
+#     for k, machine in enumerate(part_routes[j]):
+#         y = [
+#             planning.route_time[i][j][k] for i in range(len(planning.day))
+#          ]
+#         plt.plot(planning.day, y, label= f"step {k+1}: {machine}({planning.machine_quantity[j][k]}x)")
+#
+#     plt.xlabel("Day")
+#     plt.ylabel("Total machine time per day [h]")
+#     plt.title(f"Production line {j}")
+#     plt.legend(loc="upper right")
+#     plt.ylim(0, 40)
+#     plt.xlim(start_date, end_date)
+#     plt.xticks(rotation=45)
+#     plt.savefig(f"{j}.png")
 plt.show()
 

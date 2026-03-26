@@ -11,7 +11,7 @@ end_date = df["Desired delivery date"].max()
 
 class Available_machines:
     def __init__(self,start_date,end_date):
-        self.machine_id = ["SM", "TM", "MM", "MC", "DM", "GM", "CMM", "A"]
+        self.machine_id =           ["SM", "TM", "MM", "MC", "DM", "GM", "CMM", "A"]
         shifts = 2
         hours = 8
         days = len(pd.date_range(start=start_date, end=end_date))
@@ -19,8 +19,8 @@ class Available_machines:
         self.total_time = shifts * hours * days
 
         self.old_machine_quantity = dict(zip(self.machine_id, [5, 4, 5, 5, 2, 4, 4, 2]))
-        self.new_machine_quantity = dict(zip(self.machine_id, [26, 16, 30, 18, 14, 31, 16, 24]))
-
+        self.new_machine_quantity = dict(zip(self.machine_id, [6, 3, 7, 3, 4, 5, 3, 5]))
+                                                            # [1.1, -0.8, 1.55, -1, 1.6, 0, -1.1, 0.67]
         self.process_time_old = dict.fromkeys(self.machine_id, 0)
         self.process_time_new = dict.fromkeys(self.machine_id, 0)
 
@@ -40,14 +40,13 @@ class Available_machines:
 
 available_machines = Available_machines(start_date,end_date)
 
-for i, unique_machine in enumerate(available_machines.machine_id):
-    for j in range(len(ordered_part.process_time)):
-        for k, time in enumerate(ordered_part.process_time[j]):
-            machine = ordered_part.route[j][k]
-            n = ordered_part.total_quantity[j]
-            total_time = time * n
-            available_machines.process_time_old[machine] += total_time
-            available_machines.process_time_new[machine] += total_time
+for j in range(len(ordered_part.process_time)):
+    for k, time in enumerate(ordered_part.process_time[j]):
+        machine = ordered_part.route[j][k]
+        n = ordered_part.total_quantity[j]
+        total_time = time * n
+        available_machines.process_time_old[machine] += total_time
+        available_machines.process_time_new[machine] += total_time
 available_machines.calc_new_values1()
 print(available_machines.OEE_old)
 print(available_machines.OEE_new)
