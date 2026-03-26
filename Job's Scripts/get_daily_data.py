@@ -1,3 +1,5 @@
+from matplotlib.style.core import available
+
 from make_json_ordered_parts import ordered_part
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -10,6 +12,13 @@ def flatten(x):
         return result
     else:
         return [x]
+df = pd.read_csv("../data/Order pattern.csv")
+
+df["Order date"] = pd.to_datetime(df["Order date"])
+df["Desired delivery date"] = pd.to_datetime(df["Desired delivery date"])
+
+start_date = df["Order date"].min()
+end_date = df["Desired delivery date"].max()
 
 class Planning:
     def __init__(self):
@@ -21,7 +30,10 @@ class Planning:
         self.route = []
         self.route_time = []
         self.machine_quantity = []
+
+
 planning = Planning()
+
 planning.machine_quantity = [
     [4,12,14,12,7,4], # route 0 MC has high setup time
     [6,2,1,2], # route 1 MC has high setup time
@@ -34,14 +46,6 @@ planning.machine_quantity = [
     [1,1,1], # route 8
     [1,1,1] # route 9
     ]
-
-df = pd.read_csv("../data/Order pattern.csv")
-
-df["Order date"] = pd.to_datetime(df["Order date"])
-df["Desired delivery date"] = pd.to_datetime(df["Desired delivery date"])
-
-start_date = df["Order date"].min()
-end_date = df["Desired delivery date"].max()
 
 flat_order_dates = []
 flat_delivery_dates = []
@@ -103,6 +107,8 @@ for i, day in enumerate(pd.date_range(start=start_date, end=end_date)):
         ]
         for l in range(len(machine_time)):
             planning.route_time[i][route_number][l] += machine_time[l] + ordered_part.setup_time[idx][l] #*planning.machine_quantity[route_number][l] # setup time doubles with 2 machines.
+
+
 
 
 for j in unique_route_numbers[0:5]:
