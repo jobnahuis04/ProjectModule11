@@ -36,16 +36,16 @@ class Planning:
 planning = Planning()
 
 planning.machine_quantity = [
-    [2,2,2.3,2,1,2], # route 0 / SM,TM,MM,GM,CMM,A
+    [2,2,3,2,1,2], # route 0 / SM,TM,MM,GM,CMM,A
     [2,0.75,0.5,1.1], # route 1 / MC,GM,CMM,A
-    [1,2.1,1.5,0.9], # route 2 / SM,MM,DM,CMM
+    [1,2,1.5,0.9], # route 2 / SM,MM,DM,CMM
     [1,2,1,0.75,1], # route 3 / SM,MC,GM,CMM,A
-    [0.6,0.3,0.5,0.5,0.5,0.6,0.25,0.5], # route 4 / SM,TM,MM,TM,GM,DM,CMM,A
-    [0.4,0.1,0.2,0.5,0.2,0.3,0.2], # route 5 / TM,CMM,TM,GM,CMM,MM,CMM
+    [0.6,0.3,0.3,0.5,0.5,0.6,0.25,0.5], # route 4 / SM,TM,MM,TM,GM,DM,CMM,A
+    [0.4,0.1,0.2,0.5,0.2,0.2,0.2], # route 5 / TM,CMM,TM,GM,CMM,MM,CMM
     [0.4], # route 6 / A
-    [0.1,0.2,0.3,0.25,0.1], # route 7 / SM,TM,MM,GM,CMM
+    [0.1,0.2,0.1,0.25,0.1], # route 7 / SM,TM,MM,GM,CMM
     [0.1,0.1,0.1], # route 8 / SM,TM,MM
-    [0.2,0.5,0.4] # route 9 / SM,MM,DM
+    [0.2,0.4,0.4] # route 9 / SM,MM,DM
     ]
 
 flat_order_dates = []
@@ -101,7 +101,7 @@ for i, day in enumerate(pd.date_range(start=start_date, end=end_date)):
 
         # add setup time ONCE
         for l in range(len(ordered_part.setup_time[idx])):
-            mq = planning.machine_quantity[route_number][l]
+            #mq = planning.machine_quantity[route_number][l]
             planning.route_time[i][route_number][l] += ordered_part.setup_time[idx][l]#/mq
 
         # add production time
@@ -109,7 +109,7 @@ for i, day in enumerate(pd.date_range(start=start_date, end=end_date)):
             mq = planning.machine_quantity[route_number][j]
             machine_time = (
                     (ordered_part.avg_idle_time[idx][j] + ordered_part.process_time[idx][j])
-                    * planning.part_quantities[i][p]
+                    * planning.part_quantities[i][p] / planning.machine_quantity[route_number][j]
             )
             planning.route_time[i][route_number][j] += machine_time
 
@@ -119,7 +119,7 @@ for j in unique_route_numbers:
 
     for k, machine in enumerate(part_routes[j]):
         y = [
-            planning.route_time[i][j][k] / planning.machine_quantity[j][k]
+            planning.route_time[i][j][k]
             for i in range(len(planning.day))
         ]
 
@@ -144,22 +144,5 @@ for j in unique_route_numbers:
     plt.xticks(rotation=45)
     plt.savefig(f"{j}.png")
 
-
-# for j in unique_route_numbers[5::]:
-#     plt.figure()
-#     for k, machine in enumerate(part_routes[j]):
-#         y = [
-#             planning.route_time[i][j][k] for i in range(len(planning.day))
-#          ]
-#         plt.plot(planning.day, y, label= f"step {k+1}: {machine}({planning.machine_quantity[j][k]}x)")
-#
-#     plt.xlabel("Day")
-#     plt.ylabel("Total machine time per day [h]")
-#     plt.title(f"Production line {j}")
-#     plt.legend(loc="upper right")
-#     plt.ylim(0, 40)
-#     plt.xlim(start_date, end_date)
-#     plt.xticks(rotation=45)
-#     plt.savefig(f"{j}.png")
-plt.show()
+#plt.show()
 

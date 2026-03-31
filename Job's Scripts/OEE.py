@@ -15,8 +15,8 @@ class Available_machines:
         shifts = 2
         hours = 8
         days = len(pd.date_range(start=start_date, end=end_date))
-        print(days)
         self.total_time = shifts * hours * days
+        print(self.total_time)
 
         self.old_machine_quantity = dict(zip(self.machine_id, [5, 4, 5, 5, 2, 4, 4, 2]))
         #self.new_machine_quantity = dict(zip(self.machine_id, [5, 4, 6, 4, 3, 5, 4, 5])) to match planning
